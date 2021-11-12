@@ -1,0 +1,78 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      AGROCULT_BACKEND_HOST: 0.0.0.0
+      AGROCULT_BACKEND_DB_HOST: agrocult_backend-db
+      AGROCULT_BACKEND_DB_PORT: 5432
+      AGROCULT_BACKEND_DB_USER: agrocult_backend
+      AGROCULT_BACKEND_DB_PASS: agrocult_backend
+      AGROCULT_BACKEND_DB_BASE: agrocult_backend
+  db:
+    image: postgres:13.4-buster
+    hostname: agrocult_backend-db
+    environment:
+      POSTGRES_PASSWORD: "agrocult_backend"
+      POSTGRES_USER: "agrocult_backend"
+      POSTGRES_DB: "agrocult_backend"
+    volumes:
+    - agrocult_backend-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - agrocult_backend
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+
+
+  migrator:
+    image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
+    restart: "no"
+    command: aerich upgrade
+    environment:
+      AGROCULT_BACKEND_DB_HOST: agrocult_backend-db
+      AGROCULT_BACKEND_DB_PORT: 5432
+      AGROCULT_BACKEND_DB_USER: agrocult_backend
+      AGROCULT_BACKEND_DB_PASS: agrocult_backend
+      AGROCULT_BACKEND_DB_BASE: agrocult_backend
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: agrocult_backend-redis
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+
+volumes:
+  agrocult_backend-db-data:
+    name: agrocult_backend-db-data
