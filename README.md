@@ -1,9 +1,10 @@
 # agrocult_backend
 
-Start a project with:
+First start a project with 2 workers for process images:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml --project-directory . up
+docker-compose -f deploy/docker-compose.yml --project-directory . build api
+docker-compose -f deploy/docker-compose.yml --project-directory . up --scale tasks-actors-ycc=2
 ```
 
 ## Pre-commit
