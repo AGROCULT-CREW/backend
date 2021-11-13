@@ -24,7 +24,10 @@ class YieldCalculationContainer(models.Model):
 
     id = fields.IntField(pk=True)
 
+    name = fields.CharField(max_length=255)
     note = fields.TextField(default=None, null=True)
+
+    coordinates = fields.CharField(max_length=255)
 
     planting_area = fields.FloatField(validators=[MinValueValidator(min_value=1)])
 

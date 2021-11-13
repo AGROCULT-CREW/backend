@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import Field, root_validator
+from pydantic import Field, root_validator, validator
 from tortoise.contrib.pydantic import PydanticModel as BaseModel
 
 from agrocult_backend.db.models.yield_calculation_container import (
@@ -19,6 +19,8 @@ class YieldCalculationContainerCreateResponse(BaseModel):
 
     id: int = Field(...)
 
+    name: str = Field(...)
+
     note: Optional[str] = Field(default=None)
     planting_area: float = Field(..., gte=1)
 
@@ -26,6 +28,8 @@ class YieldCalculationContainerCreateResponse(BaseModel):
     calculated_at: Optional[datetime] = Field(default=None)
 
     grain_culture_id: Optional[int] = Field(default=None)
+
+    coordinates: str = Field(...)
 
     average_weight_thousand_grains: Optional[float] = Field(..., gte=1)
     average_stems_per_meter: Optional[float] = Field(..., gte=1)
@@ -86,13 +90,30 @@ class YieldCalculationContainerGetResponse(BaseModel):
 class YieldCalculationContainerCreateRequest(BaseModel):
     """Yield calculation container create request model."""
 
+    name: str = Field(...)
+
     note: Optional[str] = Field(default=None)
     planting_area: float = Field(..., gte=1)
+
+    coordinates: str = Field(...)
 
     grain_culture_id: Optional[int] = Field(default=None)
 
     custom_average_stems_per_meter: Optional[float] = Field(default=None, gte=1)
     custom_average_weight_thousand_grains: Optional[float] = Field(default=None, gte=1)
+
+    @validator("coordinates")
+    def validate_coordinates(cls, value: str) -> str:
+        try:
+            lt, lg = value.split(";")
+            float(lt), float(lg)
+
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Invalid coordinates, example: 59.89099884033203;30.42118835449219",
+            )
+
+        return value
 
     @root_validator
     def check_average_weight_thousand_grains(cls, values):
