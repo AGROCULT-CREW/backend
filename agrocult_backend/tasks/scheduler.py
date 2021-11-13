@@ -14,7 +14,7 @@ def start_worker(start_scheduler: bool = True):
         scheduler = BlockingScheduler()
         scheduler.add_job(
             lambda: queue.enqueue(process_containers, retry=Retry(max=3)),
-            IntervalTrigger(seconds=15),
+            IntervalTrigger(seconds=2),
         )
         try:
             scheduler.start()
