@@ -45,7 +45,7 @@ services:
     - ./:/app/src/
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
     restart: "no"
-    command: sh -c "aerich migrate && aerich upgrade"
+    command: aerich upgrade
     env_file:
     - .env
     depends_on:
@@ -91,9 +91,9 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "9181:9181"
+    - "9181:9181"
     env_file:
-      - .env.workers_dashboard
+    - .env.workers_dashboard
 
   redis:
     image: bitnami/redis:6.2.5
