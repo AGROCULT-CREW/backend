@@ -26,6 +26,33 @@ from agrocult_backend.web.api.container.schema import (
 router = APIRouter()
 
 
+@router.get("/", response_model=List[YieldCalculationContainerGetResponse])
+async def get_containers_list() -> List[YieldCalculationContainerGetResponse]:
+    response = []
+
+    async for container in YieldCalculationContainer.all():
+        container.average_weight_thousand_grains = await (
+            container.get_average_weight_thousand_grains()
+        )
+        container.average_stems_per_meter = (
+            await container.get_average_stems_per_meter() or None
+        )
+
+        if not await container.grain_culture:
+            container.grain_culture = None
+
+        else:
+            container.grain_culture_id = (await container.grain_culture).pk
+
+        response.append(
+            await YieldCalculationContainerGetResponse.from_tortoise_orm(
+                container,
+            ),
+        )
+
+    return response
+
+
 @router.post("/", response_model=YieldCalculationContainerCreateResponse)
 async def create_container(
     schema: YieldCalculationContainerCreateRequest,
