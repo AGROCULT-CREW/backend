@@ -2,10 +2,14 @@ version: '3.7'
 
 services:
   api:
+    ports:
+    - "8000:8000"
     build:
       context: .
       dockerfile: ./deploy/Dockerfile
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
+    volumes:
+    - ./:/app/src/
     restart: always
     env_file:
     - .env
@@ -14,13 +18,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
-      AGROCULT_BACKEND_HOST: 0.0.0.0
-      AGROCULT_BACKEND_DB_HOST: agrocult_backend-db
-      AGROCULT_BACKEND_DB_PORT: 5432
-      AGROCULT_BACKEND_DB_USER: agrocult_backend
-      AGROCULT_BACKEND_DB_PASS: agrocult_backend
-      AGROCULT_BACKEND_DB_BASE: agrocult_backend
+
   db:
     image: postgres:13.4-buster
     hostname: agrocult_backend-db
@@ -31,6 +29,8 @@ services:
     volumes:
     - agrocult_backend-db-data:/var/lib/postgresql/data
     restart: always
+    ports:
+    - "5432:5432"
     healthcheck:
       test:
       - CMD
@@ -41,18 +41,15 @@ services:
       timeout: 3s
       retries: 40
 
-
-
   migrator:
+    user: 1000:1000
+    volumes:
+    - ./:/app/src/
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
     restart: "no"
-    command: aerich upgrade
-    environment:
-      AGROCULT_BACKEND_DB_HOST: agrocult_backend-db
-      AGROCULT_BACKEND_DB_PORT: 5432
-      AGROCULT_BACKEND_DB_USER: agrocult_backend
-      AGROCULT_BACKEND_DB_PASS: agrocult_backend
-      AGROCULT_BACKEND_DB_BASE: agrocult_backend
+    command: sh -c "aerich migrate && aerich upgrade"
+    env_file:
+    - .env
     depends_on:
       db:
         condition: service_healthy
