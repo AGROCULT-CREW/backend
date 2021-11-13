@@ -110,7 +110,7 @@ class YieldCalculationContainerCreateRequest(BaseModel):
 
         except (TypeError, ValueError):
             raise ValueError(
-                "Invalid coordinates, example: 59.89099884033203;30.42118835449219",
+                "Invalid coordinates, example: 59.99099884033203;30.42118835449219",
             )
 
         return value
