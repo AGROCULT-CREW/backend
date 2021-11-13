@@ -30,7 +30,7 @@ router = APIRouter()
 async def get_containers_list() -> List[YieldCalculationContainerGetResponse]:
     response = []
 
-    async for container in YieldCalculationContainer.all():
+    async for container in YieldCalculationContainer.all().order_by("-created_at"):
         container.average_weight_thousand_grains = await (
             container.get_average_weight_thousand_grains()
         )
@@ -130,8 +130,6 @@ async def get_container_results(websocket: WebSocket, container_id: int = Path(.
                 container.average_stems_per_meter = (
                     await container.get_average_stems_per_meter() or None
                 )
-
-                container.average_grains_in_basket = 100  # FIXME
 
                 if not await container.grain_culture:
                     container.grain_culture = None
@@ -268,3 +266,17 @@ async def get_container(
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
 
     return response
+
+
+@router.get("/{container_id}/kml")
+async def get_container_kml(
+    container_id: int = Path(...),
+):
+    if container := await YieldCalculationContainer.get_or_none(
+        pk=container_id,
+    ):
+        if container.status != YieldCalculationContainerStatus.complete:
+            raise HTTPException(HTTPStatus.BAD_REQUEST, f"Bad status - {container.status}!")
+
+    else:
+        raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
