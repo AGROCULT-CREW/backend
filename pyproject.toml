@@ -28,6 +28,11 @@ python-multipart = "^0.0.5"
 aioboto3 = "^8.2.0"
 wsproto = "^1.0.0"
 orjson = "^3.6.4"
+APScheduler = "^3.8.1"
+async-to-sync = "^0.2.2"
+dramatiq = {version = "^1.12.0", extras = ["rabbitmq", "watch]"]}
+typer = "^0.4.0"
+rq = "^1.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

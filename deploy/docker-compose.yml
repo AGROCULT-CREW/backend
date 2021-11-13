@@ -51,6 +51,38 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  tasks-scheduler:
+    user: 1000:1000
+    volumes:
+    - ./:/app/src/
+    image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
+    restart: always
+    command: sh -c "python3 -m agrocult_backend.tasks.scheduler"
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  tasks-actors-ycc:
+    user: 1000:1000
+    volumes:
+    - ./:/app/src/
+    image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
+    restart: always
+    command: sh -c "python3 -m agrocult_backend.tasks.actors.yield_calculation_container"
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   redis:
     image: bitnami/redis:6.2.5

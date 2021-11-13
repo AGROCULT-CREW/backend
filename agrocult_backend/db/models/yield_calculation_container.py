@@ -57,6 +57,12 @@ class YieldCalculationContainer(models.Model):
         default=None,
     )
 
+    biological_yield = fields.FloatField(
+        validators=[MinValueValidator(min_value=1)],
+        null=True,
+        default=None,
+    )
+
     async def get_average_stems_per_meter(self) -> float:
         return (
             len(await self.photos.all())

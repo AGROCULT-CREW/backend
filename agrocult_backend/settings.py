@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     db_base: str = "agrocult_backend"
     db_echo: bool = False
 
-    redis_host: str = "agrocult_backend-redis"
+    redis_host: str = "redis"
     redis_port: int = 6379
     redis_user: Optional[str] = None
     redis_pass: Optional[str] = None

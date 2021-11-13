@@ -94,21 +94,21 @@ class YieldCalculationContainerCreateRequest(BaseModel):
 
     grain_culture_id: Optional[int] = Field(default=None)
 
-    custom_average_stems_per_meter: float = Field(..., gt=1)
-    custom_average_weight_thousand_grains: float = Field(..., gt=1)
+    custom_average_stems_per_meter: Optional[float] = Field(default=None, gt=1)
+    custom_average_weight_thousand_grains: Optional[float] = Field(default=None, gt=1)
 
     @root_validator
     def check_average_weight_thousand_grains(cls, values):
         grain_culture, custom_average_weight_thousand_grains = (
             values.get(
-                "grain_culture",
+                "grain_culture_id",
             ),
             values.get("custom_average_weight_thousand_grains"),
         )
 
         if not grain_culture and not custom_average_weight_thousand_grains:
             raise ValueError(
-                "custom_average_weight_thousand_grains " "or grain_culture required",
+                "custom_average_weight_thousand_grains or grain_culture required",
             )
 
         return values
