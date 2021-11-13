@@ -84,6 +84,17 @@ services:
       redis:
         condition: service_healthy
 
+  tasks-dashboard:
+    image: eoranged/rq-dashboard
+    restart: always
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "9181:9181"
+    env_file:
+      - .env.workers_dashboard
+
   redis:
     image: bitnami/redis:6.2.5
     hostname: agrocult_backend-redis
