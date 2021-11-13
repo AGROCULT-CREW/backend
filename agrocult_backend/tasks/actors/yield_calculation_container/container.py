@@ -78,6 +78,7 @@ async def process_containers():
             container.biological_yield = round(
                 (
                     await container.get_average_stems_per_meter()
+                    * container.planting_area
                     * await container.get_average_grains_in_basket()
                     * await container.get_average_weight_thousand_grains()
                 )
