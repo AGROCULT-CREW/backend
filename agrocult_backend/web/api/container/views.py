@@ -47,7 +47,7 @@ async def create_container(
         new_container.get_average_weight_thousand_grains()
     )
     new_container.average_stems_per_meter = (
-        await new_container.get_average_stems_per_meter() or 1
+        await new_container.get_average_stems_per_meter() or None
     )
 
     new_container.grain_culture_id = (
@@ -101,7 +101,7 @@ async def get_container_results(websocket: WebSocket, container_id: int = Path(.
                     container.get_average_weight_thousand_grains()
                 )
                 container.average_stems_per_meter = (
-                    await container.get_average_stems_per_meter() or 1
+                    await container.get_average_stems_per_meter() or None
                 )
 
                 container.average_grains_in_basket = 100  # FIXME
@@ -225,7 +225,7 @@ async def get_container(
             container.get_average_weight_thousand_grains()
         )
         container.average_stems_per_meter = (
-            await container.get_average_stems_per_meter() or 1
+            await container.get_average_stems_per_meter() or None
         )
 
         if not await container.grain_culture:
