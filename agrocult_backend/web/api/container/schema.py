@@ -20,16 +20,15 @@ class YieldCalculationContainerCreateResponse(BaseModel):
     id: int = Field(...)
 
     note: Optional[str] = Field(default=None)
-    planting_area: float = Field(..., gt=1)
+    planting_area: float = Field(..., gte=1)
 
     created_at: datetime = Field(...)
     calculated_at: Optional[datetime] = Field(default=None)
 
     grain_culture_id: Optional[int] = Field(default=None)
 
-    average_weight_thousand_grains: Optional[float] = Field(..., gt=1)
-    average_stems_per_meter: Optional[float] = Field(..., gt=1)
-    average_grains_in_basket: Optional[float] = Field(default=None, gt=1)
+    average_weight_thousand_grains: Optional[float] = Field(..., gte=1)
+    average_stems_per_meter: Optional[float] = Field(..., gte=1)
 
     status: YieldCalculationContainerStatus = Field(...)
 
@@ -55,8 +54,6 @@ class YieldCalculationContainerPhotoGetResponse(BaseModel):
 
     status: YieldCalculationContainerPhotoStatus = Field(...)
 
-    average_grains_in_basket: Optional[float] = Field(default=None, gt=1)
-
     class Config:
         orm_mode = True
         orig_model = YieldCalculationContainerPhoto
@@ -68,16 +65,16 @@ class YieldCalculationContainerGetResponse(BaseModel):
     id: int = Field(...)
 
     note: Optional[str] = Field(default=None)
-    planting_area: float = Field(..., gt=1)
+    planting_area: float = Field(..., gte=1)
 
     created_at: datetime = Field(...)
     calculated_at: Optional[datetime] = Field(default=None)
 
     grain_culture_id: Optional[int] = Field(default=None)
 
-    average_weight_thousand_grains: Optional[float] = Field(..., gt=1)
-    average_stems_per_meter: Optional[float] = Field(..., gt=1)
-    average_grains_in_basket: Optional[float] = Field(default=None, gt=1)
+    average_weight_thousand_grains: Optional[float] = Field(..., gte=1)
+    average_stems_per_meter: Optional[float] = Field(..., gte=1)
+    biological_yield: Optional[float] = Field(..., gte=1)
 
     status: YieldCalculationContainerStatus = Field(...)
 
@@ -90,12 +87,12 @@ class YieldCalculationContainerCreateRequest(BaseModel):
     """Yield calculation container create request model."""
 
     note: Optional[str] = Field(default=None)
-    planting_area: float = Field(..., gt=1)
+    planting_area: float = Field(..., gte=1)
 
     grain_culture_id: Optional[int] = Field(default=None)
 
-    custom_average_stems_per_meter: Optional[float] = Field(default=None, gt=1)
-    custom_average_weight_thousand_grains: Optional[float] = Field(default=None, gt=1)
+    custom_average_stems_per_meter: Optional[float] = Field(default=None, gte=1)
+    custom_average_weight_thousand_grains: Optional[float] = Field(default=None, gte=1)
 
     @root_validator
     def check_average_weight_thousand_grains(cls, values):
