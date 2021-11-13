@@ -1,8 +1,11 @@
+import asyncio
 from http import HTTPStatus
 from typing import List
 from uuid import uuid4
 
+import orjson
 from fastapi import APIRouter, File, HTTPException, Path, UploadFile
+from starlette.websockets import WebSocket
 
 from agrocult_backend.db.models.grain_culture import GrainCulture
 from agrocult_backend.db.models.yield_calculation_container import (
@@ -58,6 +61,74 @@ async def create_container(
     return response
 
 
+@router.websocket("/{container_id}/results/")
+async def get_container_results(websocket: WebSocket, container_id: int = Path(...)):
+    await websocket.accept()
+
+    while True:
+        await asyncio.sleep(1)
+
+        if container := await YieldCalculationContainer.get_or_none(
+            pk=container_id,
+        ):
+            if container.status not in (
+                YieldCalculationContainerStatus.processing,
+                YieldCalculationContainerStatus.internal_error,
+                YieldCalculationContainerStatus.complete,
+            ):
+                await websocket.send_json(
+                    {
+                        "code": HTTPStatus.BAD_REQUEST,
+                        "message": "Container on created stage!",
+                    },
+                )
+                break
+
+            if container.status == YieldCalculationContainerStatus.processing:
+                await websocket.send_json({"status": str(container.status)})
+
+            elif container.status == YieldCalculationContainerStatus.internal_error:
+                await websocket.send_json(
+                    {
+                        "code": HTTPStatus.INTERNAL_SERVER_ERROR,
+                        "message": "Container processing error!",
+                    },
+                )
+                break
+
+            else:
+                container.average_weight_thousand_grains = await (
+                    container.get_average_weight_thousand_grains()
+                )
+                container.average_stems_per_meter = (
+                    await container.get_average_stems_per_meter() or 1
+                )
+
+                container.average_grains_in_basket = 100  # FIXME
+
+                if not await container.grain_culture:
+                    container.grain_culture = None
+
+                else:
+                    container.grain_culture_id = (await container.grain_culture).pk
+
+                response = await YieldCalculationContainerGetResponse.from_tortoise_orm(
+                    container,
+                )
+
+                response = orjson.dumps(response.dict())
+
+                await websocket.send({"type": "websocket.send", "bytes": response})
+                break
+        else:
+            await websocket.send_json(
+                {"code": HTTPStatus.NOT_FOUND, "message": "Container not found!"},
+            )
+            break
+
+    await websocket.close()
+
+
 @router.get(
     "/{container_id}/files/",
     response_model=List[YieldCalculationContainerPhotoGetResponse],
@@ -75,7 +146,7 @@ async def get_container_files(
 
             response.append(
                 await YieldCalculationContainerPhotoGetResponse.from_tortoise_orm(
-                    photo
+                    photo,
                 ),
             )
     else:
@@ -115,7 +186,7 @@ async def upload_container_photo(
 
             response.append(
                 await YieldCalculationContainerPhotoGetResponse.from_tortoise_orm(
-                    photo
+                    photo,
                 ),
             )
     else:

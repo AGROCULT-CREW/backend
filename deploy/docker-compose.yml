@@ -23,7 +23,7 @@ services:
     image: postgres:13.4-buster
     hostname: agrocult_backend-db
     env_file:
-      - .env.db
+    - .env.db
     volumes:
     - agrocult_backend-db-data:/var/lib/postgresql/data
     restart: always

@@ -1,7 +1,7 @@
 from importlib import metadata
 
 from fastapi import FastAPI
-from fastapi.responses import UJSONResponse
+from fastapi.responses import ORJSONResponse
 from tortoise.contrib.fastapi import register_tortoise
 
 from agrocult_backend.db.config import TORTOISE_CONFIG
@@ -24,7 +24,7 @@ def get_app() -> FastAPI:
         docs_url="/api/docs",
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
-        default_response_class=UJSONResponse,
+        default_response_class=ORJSONResponse,
     )
 
     app.on_event("startup")(startup(app))
