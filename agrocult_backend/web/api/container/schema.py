@@ -75,8 +75,8 @@ class YieldCalculationContainerGetResponse(BaseModel):
 
     grain_culture_id: Optional[int] = Field(default=None)
 
-    average_weight_thousand_grains: float = Field(..., gt=1)
-    average_stems_per_meter: float = Field(..., gt=1)
+    average_weight_thousand_grains: Optional[float] = Field(..., gt=1)
+    average_stems_per_meter: Optional[float] = Field(..., gt=1)
     average_grains_in_basket: Optional[float] = Field(default=None, gt=1)
 
     status: YieldCalculationContainerStatus = Field(...)

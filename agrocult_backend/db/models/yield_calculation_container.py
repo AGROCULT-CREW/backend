@@ -66,6 +66,8 @@ class YieldCalculationContainer(models.Model):
     async def get_average_stems_per_meter(self) -> float:
         return (
             len(await self.photos.all())
+            if len(await self.photos.all())
+            else None
             if not self.custom_average_stems_per_meter
             else self.custom_average_stems_per_meter
         )
