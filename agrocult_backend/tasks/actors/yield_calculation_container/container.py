@@ -75,15 +75,12 @@ async def process_containers():
             logger.info("Container #%s finish calculations", container.pk)
 
             container.calculated_at = datetime.now()
-            container.biological_yield = round(
-                (
-                    await container.get_average_stems_per_meter()
-                    * await container.get_average_grains_in_basket()
-                    * await container.get_average_weight_thousand_grains()
-                )
-                / 1e5,  # meters -> hectares, grams -> hundredweight.
-                3,
-            )
+            container.biological_yield = (
+                await container.get_average_stems_per_meter()
+                * await container.get_average_grains_in_basket()
+                * await container.get_average_weight_thousand_grains()
+            ) / 1e5  # meters -> hectares, grams -> hundredweight.
+
             container.status = YieldCalculationContainerStatus.complete
 
         await container.save()
