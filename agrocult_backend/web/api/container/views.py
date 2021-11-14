@@ -198,7 +198,7 @@ async def upload_container_photo(
         new_photo.container = container
         new_photo.s3_path = await FileStorage.upload_file(
             body=file.file.read(),
-            file_name=new_photo.file_name,
+            file_name=new_photo.unique_file_name,
             prefix=f"containers/photos/{container.pk}",
         )
 
