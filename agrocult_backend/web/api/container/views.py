@@ -246,6 +246,12 @@ async def get_container(
     if container := await YieldCalculationContainer.get_or_none(
         pk=container_id,
     ):
+        print(
+            await container.get_average_stems_per_meter(),
+            await container.get_average_grains_in_basket(),
+            await container.get_average_weight_thousand_grains()
+        )
+
         container.average_weight_thousand_grains = await (
             container.get_average_weight_thousand_grains()
         )
