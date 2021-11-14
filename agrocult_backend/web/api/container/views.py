@@ -5,6 +5,8 @@ from uuid import uuid4
 
 import orjson
 from fastapi import APIRouter, File, HTTPException, Path, UploadFile
+from pykml.factory import KML_ElementMaker as KML
+from starlette.responses import Response
 from starlette.websockets import WebSocket
 
 from agrocult_backend.db.models.grain_culture import GrainCulture
@@ -281,5 +283,29 @@ async def get_container_kml(
                 f"Bad status - {container.status}!",
             )
 
+        plant_yield = round(container.biological_yield * container.planting_area, 2)
+        grain_culture_name = (
+            (await container.grain_culture).name
+            if await container.grain_culture
+            else ""
+        )
+        average_weight = await container.get_average_weight_thousand_grains()
+
+        description = f"""
+            Сорт: {grain_culture_name}
+            Средняя масса 1000 семян (г.): {average_weight}
+            Биологическая урожайность (ц./га.): {container.biological_yield}
+            Урожайность поля ({container.planting_area} га.): {plant_yield} ц.
+            {f"Прим. инспектора: {container.note}" if container.note else ''}
+            """
+
+        kml = KML.Placemark(
+            KML.name(container.name),
+            KML.description(description),
+            KML.Point(KML.coordinates(container.coordinates.replace(";", ","))),
+        )
+
     else:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
+
+    return Response(content=kml, media_type="application/vnd.google-earth.kml+xml")
