@@ -56,7 +56,6 @@ services:
         condition: service_healthy
 
   tasks-scheduler:
-    user: 1000:1000
     volumes:
     - ./:/app/src/
     - ./torch_assets/:/root/.cache/torch
@@ -72,7 +71,6 @@ services:
         condition: service_healthy
 
   tasks-actors-ycc:
-    user: 1000:1000
     volumes:
     - ./:/app/src/
     - ./torch_assets/:/root/.cache/torch

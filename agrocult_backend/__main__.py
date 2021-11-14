@@ -12,6 +12,7 @@ def main() -> None:
         port=settings.port,
         reload=settings.reload,
         factory=True,
+        reload_dirs=["./agrocult_backend/"],
     )
 
 
