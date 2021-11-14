@@ -82,6 +82,7 @@ async def process_containers():
                     * await container.get_average_weight_thousand_grains()
                 )
                 / 1e5,  # meters -> hectares, grams -> hundredweight.
+                3,
             )
             container.status = YieldCalculationContainerStatus.complete
 

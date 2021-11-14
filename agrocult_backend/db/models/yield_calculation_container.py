@@ -61,7 +61,7 @@ class YieldCalculationContainer(models.Model):
     )
 
     biological_yield = fields.FloatField(
-        validators=[MinValueValidator(min_value=1)],
+        validators=[MinValueValidator(min_value=0.0001)],
         null=True,
         default=None,
     )

@@ -246,12 +246,6 @@ async def get_container(
     if container := await YieldCalculationContainer.get_or_none(
         pk=container_id,
     ):
-        print(
-            await container.get_average_stems_per_meter(),
-            await container.get_average_grains_in_basket(),
-            await container.get_average_weight_thousand_grains()
-        )
-
         container.average_weight_thousand_grains = await (
             container.get_average_weight_thousand_grains()
         )
@@ -282,7 +276,10 @@ async def get_container_kml(
         pk=container_id,
     ):
         if container.status != YieldCalculationContainerStatus.complete:
-            raise HTTPException(HTTPStatus.BAD_REQUEST, f"Bad status - {container.status}!")
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST,
+                f"Bad status - {container.status}!",
+            )
 
     else:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
