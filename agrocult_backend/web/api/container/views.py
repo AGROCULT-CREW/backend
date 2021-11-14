@@ -5,6 +5,7 @@ from uuid import uuid4
 
 import orjson
 from fastapi import APIRouter, File, HTTPException, Path, UploadFile
+from lxml import etree
 from pykml.factory import KML_ElementMaker as KML
 from starlette.responses import Response
 from starlette.websockets import WebSocket
@@ -308,4 +309,4 @@ async def get_container_kml(
     else:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
 
-    return Response(content=kml, media_type="application/vnd.google-earth.kml+xml")
+    return Response(content=etree.tostring(kml), media_type="application/vnd.google-earth.kml+xml")
