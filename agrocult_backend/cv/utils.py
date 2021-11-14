@@ -11,7 +11,6 @@ def load_model():
         "ultralytics/yolov5",
         "custom",
         path=settings.model_path,
-        force_reload=True,
     )
 
 
