@@ -309,4 +309,6 @@ async def get_container_kml(
     else:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
 
-    return Response(content=etree.tostring(kml), media_type="application/vnd.google-earth.kml+xml")
+    return Response(
+        content=etree.tostring(kml), media_type="application/vnd.google-earth.kml+xml"
+    )
