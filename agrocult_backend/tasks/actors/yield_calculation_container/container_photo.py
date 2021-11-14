@@ -28,7 +28,7 @@ async def process_container_photo(photo_id: int):
         photo.pk,
     )
 
-    photo.average_grains_in_basket = randint(150, 250)  # FIXME: add ai magic
+    photo.average_grains_in_basket = randint(350, 850)  # FIXME: add ai magic
     photo.status = YieldCalculationContainerPhotoStatus.complete
     photo.calculated_at = datetime.now()
 
