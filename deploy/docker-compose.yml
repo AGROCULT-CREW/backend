@@ -9,6 +9,7 @@ services:
       dockerfile: ./deploy/Dockerfile
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
     volumes:
+    - ./torch_assets/:/root/.cache/torch
     - ./:/app/src/
     restart: always
     env_file:
@@ -58,6 +59,7 @@ services:
     user: 1000:1000
     volumes:
     - ./:/app/src/
+    - ./torch_assets/:/root/.cache/torch
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
     restart: always
     command: sh -c "python3 -m agrocult_backend.tasks.scheduler"
@@ -73,6 +75,7 @@ services:
     user: 1000:1000
     volumes:
     - ./:/app/src/
+    - ./torch_assets/:/root/.cache/torch
     image: agrocult_backend:${AGROCULT_BACKEND_VERSION:-latest}
     restart: always
     command: sh -c "python3 -m agrocult_backend.tasks.actors.yield_calculation_container"

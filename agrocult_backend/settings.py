@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     s3_url_expire: int = Field(default=8200)
     s3_bucket_name: str = Field(default="agrocult")
 
+    model_path: str = "./agrocult_backend/cv/model/best.pt"
+
     @property
     def db_url(self) -> URL:
         """

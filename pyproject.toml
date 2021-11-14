@@ -34,6 +34,14 @@ dramatiq = {version = "^1.12.0", extras = ["rabbitmq", "watch]"]}
 typer = "^0.4.0"
 rq = "^1.10.0"
 pykml = "^0.2.0"
+pandas = "^1.3.4"
+opencv-python-headless = "^4.5.4"
+torch = "^1.10.0"
+Pillow = "^8.4.0"
+torchvision = "^0.11.1"
+matplotlib = "^3.4.3"
+tqdm = "^4.62.3"
+seaborn = "^0.11.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

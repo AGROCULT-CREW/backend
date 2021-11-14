@@ -1,10 +1,11 @@
 import asyncio
 from http import HTTPStatus
+from tempfile import SpooledTemporaryFile
 from typing import List
 from uuid import uuid4
 
 import orjson
-from fastapi import APIRouter, File, HTTPException, Path, UploadFile
+from fastapi import APIRouter, Body, HTTPException, Path
 from lxml import etree
 from pykml.factory import KML_ElementMaker as KML
 from starlette.responses import Response
@@ -189,18 +190,22 @@ async def get_container_files(
 )
 async def upload_container_photo(
     container_id: int = Path(...),
-    file: UploadFile = File(...),
+    file_data: bytes = Body(..., media_type="text/plain"),
 ) -> List[YieldCalculationContainerPhotoGetResponse]:
     if container := await YieldCalculationContainer.get_or_none(
         pk=container_id,
     ):
         new_photo = YieldCalculationContainerPhoto()
 
-        new_photo.file_name = file.filename
-        new_photo.unique_file_name = f"{uuid4()}_{file.filename}"
+        file = SpooledTemporaryFile()
+        file.write(file_data)
+        file.seek(0)
+
+        new_photo.file_name = f"{container_id}.jpg"
+        new_photo.unique_file_name = f"{uuid4()}_{new_photo.file_name}"
         new_photo.container = container
         new_photo.s3_path = await FileStorage.upload_file(
-            body=file.file.read(),
+            body=file.read(),
             file_name=new_photo.unique_file_name,
             prefix=f"containers/photos/{container.pk}",
         )
