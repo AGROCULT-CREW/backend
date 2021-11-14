@@ -300,15 +300,18 @@ async def get_container_kml(
             {f"Прим. инспектора: {container.note}" if container.note else ''}
             """
 
-        kml = KML.Placemark(
-            KML.name(container.name),
-            KML.description(description),
-            KML.Point(KML.coordinates(container.coordinates.replace(";", ","))),
+        kml = KML.kml(
+            KML.Placemark(
+                KML.name(container.name),
+                KML.description(description),
+                KML.Point(KML.coordinates(container.coordinates.replace(";", ","))),
+            ),
         )
 
     else:
         raise HTTPException(HTTPStatus.NOT_FOUND, "Container not found!")
 
     return Response(
-        content=etree.tostring(kml), media_type="application/vnd.google-earth.kml+xml"
+        content=etree.tostring(kml, encoding="utf-8"),
+        media_type="application/vnd.google-earth.kml+xml",
     )
